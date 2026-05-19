@@ -1,0 +1,22 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="LocalLedger.App"
+             xmlns:local="using:LocalLedger"
+             xmlns:helpers="using:LocalLedger.Helpers"
+             xmlns:sty="using:FluentAvalonia.Styling"
+             RequestedThemeVariant="Dark">
+
+    <Application.DataTemplates>
+        <local:ViewLocator />
+    </Application.DataTemplates>
+
+    <Application.Resources>
+        <helpers:BoolToColorConverter x:Key="BoolToColorConverter"/>
+        <helpers:TypeToColorConverter x:Key="TypeToColorConverter"/>
+        <helpers:FirstCharConverter x:Key="FirstCharConverter"/>
+    </Application.Resources>
+
+    <Application.Styles>
+        <sty:FluentAvaloniaTheme />
+    </Application.Styles>
+</Application>

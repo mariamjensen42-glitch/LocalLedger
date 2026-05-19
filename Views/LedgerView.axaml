@@ -1,0 +1,115 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:LocalLedger.ViewModels"
+             xmlns:models="using:LocalLedger.Models"
+             xmlns:views="using:LocalLedger.Views"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="LocalLedger.Views.LedgerView"
+             x:DataType="vm:LedgerViewModel">
+
+    <Design.DataContext>
+        <vm:LedgerViewModel ShowAddForm="False" />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*">
+        <Border Grid.Row="0" Padding="16" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}">
+            <TextBlock Text="LocalLedger" FontSize="16" FontWeight="SemiBold" />
+        </Border>
+
+        <Grid Grid.Row="1">
+            <ScrollViewer Margin="16">
+                <StackPanel Spacing="16">
+                    <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                            CornerRadius="12" Padding="16">
+                        <StackPanel>
+                            <TextBlock Text="本月概览" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+                            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
+                                <Border Grid.Column="0" Grid.Row="0" Background="#10B981" CornerRadius="12"
+                                        Padding="16" Margin="0,0,6,0">
+                                    <StackPanel>
+                                        <TextBlock Text="收入" Foreground="White" FontSize="13" />
+                                        <TextBlock Text="{Binding TotalIncome, StringFormat='+{0:0.00}'}"
+                                                   Foreground="White" FontSize="24" FontWeight="Bold" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Column="1" Grid.Row="0" Background="#EF4444" CornerRadius="12"
+                                        Padding="16" Margin="6,0,0,0">
+                                    <StackPanel>
+                                        <TextBlock Text="支出" Foreground="White" FontSize="13" />
+                                        <TextBlock Text="{Binding TotalExpense, StringFormat='-{0:0.00}'}"
+                                                   Foreground="White" FontSize="24" FontWeight="Bold" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,12,0,0">
+                                <TextBlock Text="结余: " FontSize="14"
+                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                <TextBlock Text="{Binding Balance}" FontSize="14" FontWeight="SemiBold" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock Text="最近记录" FontSize="14" FontWeight="SemiBold" Margin="0,8,0,0" />
+                    <ItemsControl ItemsSource="{Binding Transactions}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="models:Transaction">
+                                <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                        CornerRadius="8" Padding="12" Margin="0,0,0,8">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <Border Grid.Column="0" Width="44" Height="44" CornerRadius="22"
+                                                Background="{Binding Type, Converter={StaticResource TypeToColorConverter}}"
+                                                VerticalAlignment="Center" Margin="0,0,12,0">
+                                            <TextBlock
+                                                Text="{Binding Category, Converter={StaticResource FirstCharConverter}}"
+                                                Foreground="White" FontSize="16" FontWeight="Bold"
+                                                HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Category}" FontSize="15" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding Date, StringFormat='{}{0:MM/dd}'}"
+                                                       FontSize="12"
+                                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2" Text="{Binding DisplayAmount}"
+                                                   FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"
+                                                   Foreground="{Binding Type, Converter={StaticResource TypeToColorConverter}}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Text="暂无记录" HorizontalAlignment="Center"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                               Margin="0,20,0,0"
+                               IsVisible="{Binding !Transactions.Count}" />
+                </StackPanel>
+            </ScrollViewer>
+
+            <StackPanel Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,24,24"
+                        Spacing="12">
+                <Button Width="56" Height="56" CornerRadius="28"
+                        Background="#10B981" Command="{Binding ShowAddIncomeCommand}"
+                        ToolTip.Tip="记收入">
+                    <TextBlock Text="+" FontSize="28" Foreground="White" FontWeight="Bold" />
+                </Button>
+                <Button Width="56" Height="56" CornerRadius="28"
+                        Background="#EF4444" Command="{Binding ShowAddExpenseCommand}"
+                        ToolTip.Tip="记支出">
+                    <TextBlock Text="+" FontSize="28" Foreground="White" FontWeight="Bold" />
+                </Button>
+            </StackPanel>
+
+            <Border Grid.Row="0" IsVisible="{Binding ShowAddForm, FallbackValue=False}"
+                    Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Border Width="340" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                        CornerRadius="16" Padding="20" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <views:AddTransactionView x:Name="AddForm" />
+                </Border>
+            </Border>
+        </Grid>
+    </Grid>
+
+</UserControl>

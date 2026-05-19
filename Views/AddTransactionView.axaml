@@ -1,0 +1,74 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:LocalLedger.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="360" d:DesignHeight="550"
+             x:Class="LocalLedger.Views.AddTransactionView"
+             x:DataType="vm:AddTransactionViewModel">
+
+    <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+            CornerRadius="12" Padding="20">
+        <StackPanel Spacing="16">
+            <TextBlock Text="{Binding Title}" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"/>
+
+            <Grid ColumnDefinitions="*,*" Height="40">
+                <Border Grid.Column="0" Background="#EF4444" CornerRadius="8" Margin="0,0,4,0">
+                    <Button Content="支出" Command="{Binding SetExpenseCommand}"
+                            Background="Transparent" Foreground="White"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                </Border>
+                <Border Grid.Column="1" Background="#10B981" CornerRadius="8" Margin="4,0,0,0">
+                    <Button Content="收入" Command="{Binding SetIncomeCommand}"
+                            Background="Transparent" Foreground="White"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                </Border>
+            </Grid>
+
+            <StackPanel HorizontalAlignment="Center" Spacing="4">
+                <TextBox Text="{Binding AmountText}"
+                         Watermark="0.00"
+                         FontSize="36"
+                         FontWeight="Bold"
+                         HorizontalAlignment="Center"
+                         HorizontalContentAlignment="Center"
+                         Width="180"
+                         Height="60"/>
+                <TextBlock Text="¥" FontSize="16" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                           HorizontalAlignment="Center" Margin="0,-4,0,0"/>
+            </StackPanel>
+
+            <StackPanel Spacing="6">
+                <TextBlock Text="分类" FontSize="13" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                <ComboBox ItemsSource="{Binding CurrentCategories}"
+                          SelectedIndex="{Binding SelectedCategoryIndex}"
+                          HorizontalAlignment="Stretch"/>
+            </StackPanel>
+
+            <StackPanel Spacing="6">
+                <TextBlock Text="日期" FontSize="13" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                <CalendarDatePicker SelectedDate="{Binding SelectedDate}"
+                                   HorizontalAlignment="Stretch"/>
+            </StackPanel>
+
+            <StackPanel Spacing="6">
+                <TextBlock Text="备注" FontSize="13" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                <TextBox Text="{Binding Note}"
+                         Watermark="添加备注..."
+                         HorizontalAlignment="Stretch"/>
+            </StackPanel>
+
+            <Grid ColumnDefinitions="*,*" Margin="0,8,0,0">
+                <Button Grid.Column="0" Content="取消"
+                        Command="{Binding CancelCommand}"
+                        HorizontalAlignment="Stretch"
+                        Margin="0,0,6,0"/>
+                <Button Grid.Column="1" Content="保存"
+                        Command="{Binding SaveCommand}"
+                        HorizontalAlignment="Stretch"
+                        Margin="6,0,0,0"/>
+            </Grid>
+        </StackPanel>
+    </Border>
+
+</UserControl>
