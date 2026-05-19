@@ -5,6 +5,7 @@
              xmlns:vm="using:LocalLedger.ViewModels"
              xmlns:models="using:LocalLedger.Models"
              xmlns:views="using:LocalLedger.Views"
+             xmlns:ui="using:FluentAvalonia.UI.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
              x:Class="LocalLedger.Views.LedgerView"
              x:DataType="vm:LedgerViewModel">
@@ -24,7 +25,7 @@
                     <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                             CornerRadius="12" Padding="16">
                         <StackPanel>
-                            <TextBlock Text="本月概览" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+                            <TextBlock Text="概览" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
                             <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
                                 <Border Grid.Column="0" Grid.Row="0" Background="#10B981" CornerRadius="12"
                                         Padding="16" Margin="0,0,6,0">
@@ -51,8 +52,26 @@
                         </StackPanel>
                     </Border>
 
-                    <TextBlock Text="最近记录" FontSize="14" FontWeight="SemiBold" Margin="0,8,0,0" />
-                    <ItemsControl ItemsSource="{Binding Transactions}">
+                    <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                            CornerRadius="8" Padding="8">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <RadioButton Content="全部" GroupName="DateFilter"
+                                         CommandParameter="{x:Static vm:DateFilter.All}"
+                                         IsChecked="{Binding CurrentFilter, Converter={StaticResource EnumEqualsConverter}, ConverterParameter={x:Static vm:DateFilter.All}}"/>
+                            <RadioButton Content="今天" GroupName="DateFilter"
+                                         CommandParameter="{x:Static vm:DateFilter.Today}"
+                                         IsChecked="{Binding CurrentFilter, Converter={StaticResource EnumEqualsConverter}, ConverterParameter={x:Static vm:DateFilter.Today}}"/>
+                            <RadioButton Content="本周" GroupName="DateFilter"
+                                         CommandParameter="{x:Static vm:DateFilter.ThisWeek}"
+                                         IsChecked="{Binding CurrentFilter, Converter={StaticResource EnumEqualsConverter}, ConverterParameter={x:Static vm:DateFilter.ThisWeek}}"/>
+                            <RadioButton Content="本月" GroupName="DateFilter"
+                                         CommandParameter="{x:Static vm:DateFilter.ThisMonth}"
+                                         IsChecked="{Binding CurrentFilter, Converter={StaticResource EnumEqualsConverter}, ConverterParameter={x:Static vm:DateFilter.ThisMonth}}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock Text="记录" FontSize="14" FontWeight="SemiBold" Margin="0,8,0,0" />
+                    <ItemsControl ItemsSource="{Binding FilteredTransactions}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="models:Transaction">
                                 <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
@@ -68,13 +87,28 @@
                                         </Border>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                             <TextBlock Text="{Binding Category}" FontSize="15" FontWeight="SemiBold" />
-                                            <TextBlock Text="{Binding Date, StringFormat='{}{0:MM/dd}'}"
+                                            <TextBlock Text="{Binding Date, StringFormat='{}{0:MM/dd HH:mm}'}"
                                                        FontSize="12"
                                                        Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                                         </StackPanel>
-                                        <TextBlock Grid.Column="2" Text="{Binding DisplayAmount}"
-                                                   FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"
-                                                   Foreground="{Binding Type, Converter={StaticResource TypeToColorConverter}}" />
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding DisplayAmount}"
+                                                       FontSize="16" FontWeight="SemiBold"
+                                                       Foreground="{Binding Type, Converter={StaticResource TypeToColorConverter}}" />
+                                            <Button Command="{Binding $parent[UserControl].DataContext.EditTransactionCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    Margin="8,0,4,0"
+                                                    Background="Transparent"
+                                                    Padding="8,4">
+                                                <ui:SymbolIcon Symbol="Edit" />
+                                            </Button>
+                                            <Button Command="{Binding $parent[UserControl].DataContext.DeleteTransactionCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    Background="Transparent"
+                                                    Padding="8,4">
+                                                <ui:SymbolIcon Symbol="Delete" Foreground="#EF4444" />
+                                            </Button>
+                                        </StackPanel>
                                     </Grid>
                                 </Border>
                             </DataTemplate>
@@ -84,7 +118,7 @@
                     <TextBlock Text="暂无记录" HorizontalAlignment="Center"
                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                Margin="0,20,0,0"
-                               IsVisible="{Binding !Transactions.Count}" />
+                               IsVisible="{Binding !FilteredTransactions.Count}" />
                 </StackPanel>
             </ScrollViewer>
 
