@@ -7,133 +7,131 @@
              x:Class="LocalLedger.Views.StatisticsView"
              x:DataType="vm:StatisticsViewModel">
 
-    <Grid RowDefinitions="Auto,*">
+    <ScrollViewer Margin="16">
+        <StackPanel Spacing="16">
+            <!-- 时间筛选 -->
+            <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                    CornerRadius="8"
+                    Padding="12">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <RadioButton Content="本周" GroupName="StatsTimeFilter"
+                                 IsChecked="{Binding CurrentTimeFilter, Converter={StaticResource EnumEqualsConverter}, ConverterParameter={x:Static vm:StatsTimeFilter.ThisWeek}}" />
+                    <RadioButton Content="本月" GroupName="StatsTimeFilter"
+                                 IsChecked="{Binding CurrentTimeFilter, Converter={StaticResource EnumEqualsConverter}, ConverterParameter={x:Static vm:StatsTimeFilter.ThisMonth}}" />
+                    <RadioButton Content="今年" GroupName="StatsTimeFilter"
+                                 IsChecked="{Binding CurrentTimeFilter, Converter={StaticResource EnumEqualsConverter}, ConverterParameter={x:Static vm:StatsTimeFilter.ThisYear}}" />
+                    <RadioButton Content="全部" GroupName="StatsTimeFilter"
+                                 IsChecked="{Binding CurrentTimeFilter, Converter={StaticResource EnumEqualsConverter}, ConverterParameter={x:Static vm:StatsTimeFilter.All}}" />
+                </StackPanel>
+            </Border>
 
-        <Border Grid.Row="0" Padding="16" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}">
-            <TextBlock Text="统计" FontSize="20" FontWeight="Bold"/>
-        </Border>
+            <!-- 概况 -->
+            <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                    CornerRadius="12"
+                    Padding="16">
+                <StackPanel>
+                    <TextBlock Text="收支概况" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
 
-        <ScrollViewer Grid.Row="1" Margin="16">
-            <StackPanel Spacing="16">
-                <!-- 时间筛选 -->
-                <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                        CornerRadius="8"
-                        Padding="12">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <RadioButton Content="本周" GroupName="StatsTimeFilter"
-                                     IsChecked="{Binding CurrentTimeFilter, Converter={StaticResource EnumEqualsConverter}, ConverterParameter={x:Static vm:StatsTimeFilter.ThisWeek}}"/>
-                        <RadioButton Content="本月" GroupName="StatsTimeFilter"
-                                     IsChecked="{Binding CurrentTimeFilter, Converter={StaticResource EnumEqualsConverter}, ConverterParameter={x:Static vm:StatsTimeFilter.ThisMonth}}"/>
-                        <RadioButton Content="今年" GroupName="StatsTimeFilter"
-                                     IsChecked="{Binding CurrentTimeFilter, Converter={StaticResource EnumEqualsConverter}, ConverterParameter={x:Static vm:StatsTimeFilter.ThisYear}}"/>
-                        <RadioButton Content="全部" GroupName="StatsTimeFilter"
-                                     IsChecked="{Binding CurrentTimeFilter, Converter={StaticResource EnumEqualsConverter}, ConverterParameter={x:Static vm:StatsTimeFilter.All}}"/>
-                    </StackPanel>
-                </Border>
+                    <Grid ColumnDefinitions="*,*,*">
+                        <Border Grid.Column="0" Background="#10B981" CornerRadius="12" Padding="12" Margin="0,0,6,0">
+                            <StackPanel>
+                                <TextBlock Text="收入" Foreground="White" FontSize="13" />
+                                <TextBlock Text="{Binding TotalIncome, StringFormat='+¥{0:0.00}'}"
+                                           Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,4,0,0" />
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="1" Background="#EF4444" CornerRadius="12" Padding="12" Margin="6,0,6,0">
+                            <StackPanel>
+                                <TextBlock Text="支出" Foreground="White" FontSize="13" />
+                                <TextBlock Text="{Binding TotalExpense, StringFormat='-¥{0:0.00}'}"
+                                           Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,4,0,0" />
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="2" Background="{DynamicResource SystemControlBackgroundAccentBrush}"
+                                CornerRadius="12" Padding="12" Margin="6,0,0,0">
+                            <StackPanel>
+                                <TextBlock Text="结余" Foreground="White" FontSize="13" />
+                                <TextBlock Text="{Binding Balance, StringFormat='¥{0:0.00}'}"
+                                           Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,4,0,0" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Border>
 
-                <!-- 概况 -->
-                <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                        CornerRadius="12"
-                        Padding="16">
-                    <StackPanel>
-                        <TextBlock Text="收支概况" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
-
-                        <Grid ColumnDefinitions="*,*,*">
-                            <Border Grid.Column="0" Background="#10B981" CornerRadius="12" Padding="12" Margin="0,0,6,0">
-                                <StackPanel>
-                                    <TextBlock Text="收入" Foreground="White" FontSize="13"/>
-                                    <TextBlock Text="{Binding TotalIncome, StringFormat='+¥{0:0.00}'}"
-                                               Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,4,0,0"/>
+            <!-- 支出分类统计 -->
+            <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                    CornerRadius="12"
+                    Padding="16">
+                <StackPanel>
+                    <TextBlock Text="支出分类" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+                    <ItemsControl ItemsSource="{Binding ExpenseCategoryStats}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:CategoryStats">
+                                <StackPanel Margin="0,0,0,8">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <Border Grid.Column="0" Width="36" Height="36" CornerRadius="18"
+                                                Background="{Binding Color}"
+                                                VerticalAlignment="Center" Margin="0,0,12,0">
+                                            <TextBlock Text="{Binding Icon}"
+                                                       Foreground="White" FontSize="14" FontWeight="Bold"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding CategoryName}" FontSize="14"
+                                                       FontWeight="SemiBold" />
+                                            <ProgressBar Value="{Binding Percentage}" Maximum="100"
+                                                         Height="4" Margin="0,4,0,0"
+                                                         Foreground="{Binding Color}" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{Binding TotalAmount, StringFormat='¥{0:0.00}'}"
+                                                   FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                    </Grid>
                                 </StackPanel>
-                            </Border>
-                            <Border Grid.Column="1" Background="#EF4444" CornerRadius="12" Padding="12" Margin="6,0,6,0">
-                                <StackPanel>
-                                    <TextBlock Text="支出" Foreground="White" FontSize="13"/>
-                                    <TextBlock Text="{Binding TotalExpense, StringFormat='-¥{0:0.00}'}"
-                                               Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,4,0,0"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- 收入分类统计 -->
+            <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                    CornerRadius="12"
+                    Padding="16">
+                <StackPanel>
+                    <TextBlock Text="收入分类" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+                    <ItemsControl ItemsSource="{Binding IncomeCategoryStats}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:CategoryStats">
+                                <StackPanel Margin="0,0,0,8">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <Border Grid.Column="0" Width="36" Height="36" CornerRadius="18"
+                                                Background="{Binding Color}"
+                                                VerticalAlignment="Center" Margin="0,0,12,0">
+                                            <TextBlock Text="{Binding Icon}"
+                                                       Foreground="White" FontSize="14" FontWeight="Bold"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding CategoryName}" FontSize="14"
+                                                       FontWeight="SemiBold" />
+                                            <ProgressBar Value="{Binding Percentage}" Maximum="100"
+                                                         Height="4" Margin="0,4,0,0"
+                                                         Foreground="{Binding Color}" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{Binding TotalAmount, StringFormat='¥{0:0.00}'}"
+                                                   FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                    </Grid>
                                 </StackPanel>
-                            </Border>
-                            <Border Grid.Column="2" Background="{DynamicResource SystemControlBackgroundAccentBrush}" CornerRadius="12" Padding="12" Margin="6,0,0,0">
-                                <StackPanel>
-                                    <TextBlock Text="结余" Foreground="White" FontSize="13"/>
-                                    <TextBlock Text="{Binding Balance, StringFormat='¥{0:0.00}'}"
-                                               Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,4,0,0"/>
-                                </StackPanel>
-                            </Border>
-                        </Grid>
-                    </StackPanel>
-                </Border>
-
-                <!-- 支出分类统计 -->
-                <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                        CornerRadius="12"
-                        Padding="16">
-                    <StackPanel>
-                        <TextBlock Text="支出分类" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
-                        <ItemsControl ItemsSource="{Binding ExpenseCategoryStats}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="vm:CategoryStats">
-                                    <StackPanel Margin="0,0,0,8">
-                                        <Grid ColumnDefinitions="Auto,*,Auto">
-                                            <Border Grid.Column="0" Width="36" Height="36" CornerRadius="18"
-                                                    Background="{Binding Color}"
-                                                    VerticalAlignment="Center" Margin="0,0,12,0">
-                                                <TextBlock Text="{Binding Icon}"
-                                                           Foreground="White" FontSize="14" FontWeight="Bold"
-                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Border>
-                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding CategoryName}" FontSize="14" FontWeight="SemiBold"/>
-                                                <ProgressBar Value="{Binding Percentage}" Maximum="100"
-                                                             Height="4" Margin="0,4,0,0"
-                                                             Foreground="{Binding Color}"/>
-                                            </StackPanel>
-                                            <TextBlock Grid.Column="2" Text="{Binding TotalAmount, StringFormat='¥{0:0.00}'}"
-                                                       FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                        </Grid>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
-                </Border>
-
-                <!-- 收入分类统计 -->
-                <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                        CornerRadius="12"
-                        Padding="16">
-                    <StackPanel>
-                        <TextBlock Text="收入分类" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
-                        <ItemsControl ItemsSource="{Binding IncomeCategoryStats}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="vm:CategoryStats">
-                                    <StackPanel Margin="0,0,0,8">
-                                        <Grid ColumnDefinitions="Auto,*,Auto">
-                                            <Border Grid.Column="0" Width="36" Height="36" CornerRadius="18"
-                                                    Background="{Binding Color}"
-                                                    VerticalAlignment="Center" Margin="0,0,12,0">
-                                                <TextBlock Text="{Binding Icon}"
-                                                           Foreground="White" FontSize="14" FontWeight="Bold"
-                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Border>
-                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding CategoryName}" FontSize="14" FontWeight="SemiBold"/>
-                                                <ProgressBar Value="{Binding Percentage}" Maximum="100"
-                                                             Height="4" Margin="0,4,0,0"
-                                                             Foreground="{Binding Color}"/>
-                                            </StackPanel>
-                                            <TextBlock Grid.Column="2" Text="{Binding TotalAmount, StringFormat='¥{0:0.00}'}"
-                                                       FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                        </Grid>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
-                </Border>
-            </StackPanel>
-        </ScrollViewer>
-
-    </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
 
 </UserControl>
+

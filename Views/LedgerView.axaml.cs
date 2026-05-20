@@ -17,6 +17,7 @@ public partial class LedgerView : UserControl
         InitializeComponent();
 
         DataContextChanged += OnDataContextChanged;
+        DataContext = new LedgerViewModel();
     }
 
     private void OnDataContextChanged(object? sender, EventArgs e)

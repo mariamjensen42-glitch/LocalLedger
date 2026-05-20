@@ -9,96 +9,81 @@
              x:Class="LocalLedger.Views.CategoryView"
              x:DataType="vm:CategoryViewModel">
 
-    <Grid RowDefinitions="Auto,*">
-        <Border Grid.Row="0" Padding="16" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}">
-            <Grid ColumnDefinitions="*,*,*">
-                <Button Grid.Column="0" Content="记支出"
-                        HorizontalAlignment="Center" />
-                <Button Grid.Column="1" Content="记收入"
-                        HorizontalAlignment="Center" />
-                <TextBlock Grid.Column="2" Text="分类"
-                           FontSize="16" FontWeight="SemiBold"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Right" />
-            </Grid>
-        </Border>
-
-        <ScrollViewer Grid.Row="1" Margin="16">
-            <StackPanel Spacing="24">
-                <StackPanel Spacing="12">
-                    <TextBlock Text="支出分类" FontSize="16" FontWeight="SemiBold" />
-                    <ItemsControl ItemsSource="{Binding ExpenseCategories}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="models:Category">
-                                <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                                        CornerRadius="8" Padding="12" Margin="0,0,0,8">
-                                    <Grid ColumnDefinitions="Auto,*,Auto">
-                                        <Border Grid.Column="0" Width="40" Height="40" CornerRadius="20"
-                                                Background="{Binding Color}" Margin="0,0,12,0">
-                                            <TextBlock Text="{Binding Icon}" Foreground="White"
-                                                       FontSize="14" FontWeight="Bold"
-                                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                        </Border>
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold" />
-                                            <TextBlock FontSize="12"
-                                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}">
-                                                <TextBlock.Text>
-                                                    <MultiBinding StringFormat="{}{0} 笔记录">
-                                                        <Binding Path="TransactionCount" />
-                                                    </MultiBinding>
-                                                </TextBlock.Text>
-                                            </TextBlock>
-                                        </StackPanel>
-                                        <TextBlock Grid.Column="2"
-                                                   Text="{Binding TotalAmount, StringFormat='-{0:0.00}'}"
-                                                   Foreground="#EF4444" FontSize="14" FontWeight="SemiBold"
-                                                   VerticalAlignment="Center" />
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
-
-                <StackPanel Spacing="12">
-                    <TextBlock Text="收入分类" FontSize="16" FontWeight="SemiBold" />
-                    <ItemsControl ItemsSource="{Binding IncomeCategories}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="models:Category">
-                                <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                                        CornerRadius="8" Padding="12" Margin="0,0,0,8">
-                                    <Grid ColumnDefinitions="Auto,*,Auto">
-                                        <Border Grid.Column="0" Width="40" Height="40" CornerRadius="20"
-                                                Background="{Binding Color}" Margin="0,0,12,0">
-                                            <TextBlock Text="{Binding Icon}" Foreground="White"
-                                                       FontSize="14" FontWeight="Bold"
-                                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                        </Border>
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold" />
-                                            <TextBlock FontSize="12"
-                                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}">
-                                                <TextBlock.Text>
-                                                    <MultiBinding StringFormat="{}{0} 笔记录">
-                                                        <Binding Path="TransactionCount" />
-                                                    </MultiBinding>
-                                                </TextBlock.Text>
-                                            </TextBlock>
-                                        </StackPanel>
-                                        <TextBlock Grid.Column="2"
-                                                   Text="{Binding TotalAmount, StringFormat='+{0:0.00}'}"
-                                                   Foreground="#10B981" FontSize="14" FontWeight="SemiBold"
-                                                   VerticalAlignment="Center" />
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
+    <ScrollViewer Margin="16">
+        <StackPanel Spacing="24">
+            <StackPanel Spacing="12">
+                <TextBlock Text="支出分类" FontSize="16" FontWeight="SemiBold" />
+                <ItemsControl ItemsSource="{Binding ExpenseCategories}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:Category">
+                            <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                    CornerRadius="8" Padding="12" Margin="0,0,0,8">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <Border Grid.Column="0" Width="40" Height="40" CornerRadius="20"
+                                            Background="{Binding Color}" Margin="0,0,12,0">
+                                        <TextBlock Text="{Binding Icon}" Foreground="White"
+                                                   FontSize="14" FontWeight="Bold"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold" />
+                                        <TextBlock FontSize="12"
+                                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}">
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}{0} 笔记录">
+                                                    <Binding Path="TransactionCount" />
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding TotalAmount, StringFormat='-{0:0.00}'}"
+                                               Foreground="#EF4444" FontSize="14" FontWeight="SemiBold"
+                                               VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </StackPanel>
-        </ScrollViewer>
-    </Grid>
+
+            <StackPanel Spacing="12">
+                <TextBlock Text="收入分类" FontSize="16" FontWeight="SemiBold" />
+                <ItemsControl ItemsSource="{Binding IncomeCategories}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:Category">
+                            <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                    CornerRadius="8" Padding="12" Margin="0,0,0,8">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <Border Grid.Column="0" Width="40" Height="40" CornerRadius="20"
+                                            Background="{Binding Color}" Margin="0,0,12,0">
+                                        <TextBlock Text="{Binding Icon}" Foreground="White"
+                                                   FontSize="14" FontWeight="Bold"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold" />
+                                        <TextBlock FontSize="12"
+                                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}">
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}{0} 笔记录">
+                                                    <Binding Path="TransactionCount" />
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding TotalAmount, StringFormat='+{0:0.00}'}"
+                                               Foreground="#10B981" FontSize="14" FontWeight="SemiBold"
+                                               VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
 
 </UserControl>
 
