@@ -47,11 +47,17 @@ public partial class LedgerView : UserControl
             IsExpense = _viewModel.IsAddingExpense
         };
 
+        // 如果是编辑模式，加载现有交易
+        if (_viewModel.EditingTransaction != null)
+        {
+            _addViewModel.LoadTransaction(_viewModel.EditingTransaction);
+        }
+
         _addViewModel.OnClose = transaction =>
         {
             if (transaction != null)
             {
-                _viewModel.AddTransaction(transaction);
+                _viewModel.AddOrUpdateTransaction(transaction);
             }
             else
             {

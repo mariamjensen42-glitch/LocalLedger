@@ -1,6 +1,8 @@
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using LocalLedger.Models;
 
 namespace LocalLedger.Services;
@@ -9,6 +11,10 @@ public class DataService
 {
     private static readonly Lazy<DataService> _instance = new(() => new DataService());
     public static DataService Instance => _instance.Value;
+
+    public event EventHandler? DataChanged;
+
+    private readonly string _dataPath;
 
     public ObservableCollection<Transaction> Transactions { get; } = new();
 
@@ -31,10 +37,84 @@ public class DataService
         new Category { Name = "其他", Icon = "其", Color = "#6B7280", Type = CategoryType.Income }
     };
 
+    private DataService()
+    {
+        var appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LocalLedger");
+        Directory.CreateDirectory(appDataPath);
+        _dataPath = Path.Combine(appDataPath, "transactions.json");
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        if (File.Exists(_dataPath))
+        {
+            try
+            {
+                var json = File.ReadAllText(_dataPath);
+                var savedTransactions = JsonSerializer.Deserialize<Transaction[]>(json);
+                if (savedTransactions != null)
+                {
+                    foreach (var t in savedTransactions)
+                    {
+                        Transactions.Add(t);
+                    }
+                }
+            }
+            catch
+            {
+            }
+        }
+        UpdateCategoryStats();
+    }
+
+    private void SaveData()
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(Transactions, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(_dataPath, json);
+        }
+        catch
+        {
+        }
+    }
+
+    private void OnDataChanged()
+    {
+        DataChanged?.Invoke(this, EventArgs.Empty);
+    }
+
     public void AddTransaction(Transaction transaction)
     {
         Transactions.Insert(0, transaction);
         UpdateCategoryStats();
+        SaveData();
+        OnDataChanged();
+    }
+
+    public void UpdateTransaction(Transaction transaction)
+    {
+        var index = Transactions.IndexOf(Transactions.First(t => t.Id == transaction.Id));
+        if (index >= 0)
+        {
+            Transactions[index] = transaction;
+            UpdateCategoryStats();
+            SaveData();
+            OnDataChanged();
+        }
+    }
+
+    public void DeleteTransaction(string id)
+    {
+        var transaction = Transactions.FirstOrDefault(t => t.Id == id);
+        if (transaction != null)
+        {
+            Transactions.Remove(transaction);
+            UpdateCategoryStats();
+            SaveData();
+            OnDataChanged();
+        }
     }
 
     public void UpdateCategoryStats()
