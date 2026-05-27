@@ -130,6 +130,28 @@
                     </ItemsControl>
                 </StackPanel>
             </Border>
+
+            <!-- AI财务建议 -->
+            <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                    CornerRadius="12"
+                    Padding="16">
+                <StackPanel>
+                    <Grid ColumnDefinitions="*, Auto">
+                    <TextBlock Text="AI财务建议" FontSize="16" FontWeight="SemiBold" Grid.Column="0" />
+                    <Button x:Name="BtnGenerateAdvice" Content="获取建议"
+                            Command="{Binding GenerateFinancialAdviceCommand}"
+                            Click="OnGenerateAdviceClick"
+                            Padding="16,8" FontSize="14" 
+                            Grid.Column="1" />
+                </Grid>
+                    <Border Background="{DynamicResource AccentBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="12" Margin="0,12,0,0">
+                        <TextBlock Text="{Binding FinancialAdvice, FallbackValue='点击上方按钮获取AI财务建议'}"
+                                   FontSize="14"
+                                   Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                   TextWrapping="Wrap" />
+                    </Border>
+                </StackPanel>
+            </Border>
         </StackPanel>
     </ScrollViewer>
 

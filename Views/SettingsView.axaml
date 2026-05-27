@@ -38,6 +38,51 @@
                     CornerRadius="8"
                     Padding="16">
                 <StackPanel>
+                    <TextBlock Text="预算设置" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,12" />
+                    <StackPanel Spacing="12">
+                        <CheckBox Content="启用月度预算" IsChecked="{Binding BudgetEnabled}" />
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="月度限额:" VerticalAlignment="Center" />
+                            <TextBox Text="{Binding MonthlyBudgetLimit}"
+                                     Width="120"
+                                     PlaceholderText="0.00" />
+                            <TextBlock Text="元" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="预警阈值:" VerticalAlignment="Center" />
+                            <NumericUpDown Value="{Binding BudgetWarningThreshold}"
+                                           Minimum="50"
+                                           Maximum="100"
+                                           Width="100" />
+                            <TextBlock Text="%" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <Button Content="保存预算设置"
+                                Command="{Binding SaveBudgetSettingsCommand}"
+                                HorizontalAlignment="Right" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                    CornerRadius="8"
+                    Padding="16">
+                <StackPanel>
+                    <TextBlock Text="AI设置" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,12" />
+                    <StackPanel Spacing="8">
+                        <TextBox Text="{Binding OpenAiApiKey}"
+                                 PlaceholderText="OpenAI API Key"
+                                 HorizontalAlignment="Stretch" />
+                        <Button Content="保存API密钥"
+                                Command="{Binding SaveApiKeyCommand}"
+                                HorizontalAlignment="Right" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                    CornerRadius="8"
+                    Padding="16">
+                <StackPanel>
                     <TextBlock Text="关于" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,12" />
                     <TextBlock Text="LocalLedger v1.0.0" />
                     <TextBlock Text="本地记账应用" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />

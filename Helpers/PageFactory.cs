@@ -3,10 +3,11 @@ using Avalonia.Controls;
 using FluentAvalonia.UI.Controls;
 using LocalLedger.ViewModels;
 using LocalLedger.Views;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LocalLedger.Helpers;
 
-public class PageFactory : INavigationPageFactory
+public class PageFactory
 {
     public Control? GetPage(Type sourcePageType)
     {
@@ -25,10 +26,10 @@ public class PageFactory : INavigationPageFactory
         {
             page.DataContext = sourcePageType switch
             {
-                Type t when t == typeof(LedgerView) => new LedgerViewModel(),
-                Type t when t == typeof(StatisticsView) => new StatisticsViewModel(),
-                Type t when t == typeof(CategoryView) => new CategoryViewModel(),
-                Type t when t == typeof(SettingsView) => new SettingsViewModel(),
+                Type t when t == typeof(LedgerView) => App.Services.GetRequiredService<LedgerViewModel>(),
+                Type t when t == typeof(StatisticsView) => App.Services.GetRequiredService<StatisticsViewModel>(),
+                Type t when t == typeof(CategoryView) => App.Services.GetRequiredService<CategoryViewModel>(),
+                Type t when t == typeof(SettingsView) => App.Services.GetRequiredService<SettingsViewModel>(),
                 _ => null
             };
         }
@@ -38,10 +39,10 @@ public class PageFactory : INavigationPageFactory
 
     public Control? GetPageFromObject(object target)
     {
-        if (target is LedgerView) return new LedgerView { DataContext = new LedgerViewModel() };
-        if (target is StatisticsView) return new StatisticsView { DataContext = new StatisticsViewModel() };
-        if (target is CategoryView) return new CategoryView { DataContext = new CategoryViewModel() };
-        if (target is SettingsView) return new SettingsView { DataContext = new SettingsViewModel() };
+        if (target is LedgerView) return new LedgerView { DataContext = App.Services.GetRequiredService<LedgerViewModel>() };
+        if (target is StatisticsView) return new StatisticsView { DataContext = App.Services.GetRequiredService<StatisticsViewModel>() };
+        if (target is CategoryView) return new CategoryView { DataContext = App.Services.GetRequiredService<CategoryViewModel>() };
+        if (target is SettingsView) return new SettingsView { DataContext = App.Services.GetRequiredService<SettingsViewModel>() };
         return null;
     }
 }

@@ -17,6 +17,45 @@
     <Grid>
         <ScrollViewer Margin="16">
             <StackPanel Spacing="16">
+                <!-- 预算提醒 -->
+                <Border Background="#FEF2F2" CornerRadius="8" Padding="12"
+                        IsVisible="{Binding IsBudgetOver}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="Warning" FontSize="16" Foreground="#DC2626" FontWeight="Bold" VerticalAlignment="Center" />
+                        <TextBlock Text="本月支出已超出预算！" FontSize="14" Foreground="#DC2626" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+
+                <Border Background="#FFFBEB" CornerRadius="8" Padding="12"
+                        IsVisible="{Binding IsBudgetNear}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="Alert" FontSize="16" Foreground="#D97706" FontWeight="Bold" VerticalAlignment="Center" />
+                        <TextBlock Text="本月支出即将达到预算上限" FontSize="14" Foreground="#D97706" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                        CornerRadius="12" Padding="16"
+                        IsVisible="{Binding BudgetLimit, Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <StackPanel>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0" Text="预算进度" FontSize="14" FontWeight="SemiBold" />
+                            <TextBlock Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0:N0} / {1:N0} 元">
+                                        <Binding Path="CurrentMonthExpense" />
+                                        <Binding Path="BudgetLimit" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </Grid>
+                        <ProgressBar Value="{Binding BudgetPercentage}" Maximum="100" Height="8" Margin="0,8,0,0"
+                                     Foreground="{Binding IsBudgetOver, Converter={StaticResource BoolToColorConverter}, ConverterParameter=Budget}" />
+                        <TextBlock Text="{Binding BudgetPercentage, StringFormat='{}{0:F1}%'}" FontSize="12"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,4,0,0" />
+                    </StackPanel>
+                </Border>
+
                 <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                         CornerRadius="12" Padding="16">
                     <StackPanel>
@@ -96,14 +135,14 @@
                                             Margin="8,0,4,0"
                                             Background="Transparent"
                                             Padding="8,4">
-                                            <ui:SymbolIcon Symbol="Edit" />
+                                            <ui:FASymbolIcon Symbol="Edit" />
                                         </Button>
                                         <Button
                                             Command="{Binding $parent[UserControl].DataContext.DeleteTransactionCommand}"
                                             CommandParameter="{Binding}"
                                             Background="Transparent"
                                             Padding="8,4">
-                                            <ui:SymbolIcon Symbol="Delete" Foreground="#EF4444" />
+                                            <ui:FASymbolIcon Symbol="Delete" Foreground="#EF4444" />
                                         </Button>
                                     </StackPanel>
                                 </Grid>

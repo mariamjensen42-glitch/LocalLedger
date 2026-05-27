@@ -1,7 +1,11 @@
+using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LocalLedger.Models;
+using LocalLedger.Services;
 
 namespace LocalLedger.ViewModels;
 
@@ -9,6 +13,18 @@ public partial class SettingsViewModel : ViewModelBase
 {
     [ObservableProperty]
     private int _selectedThemeIndex;
+
+    [ObservableProperty]
+    private string _openAiApiKey = string.Empty;
+
+    [ObservableProperty]
+    private decimal _monthlyBudgetLimit;
+
+    [ObservableProperty]
+    private bool _budgetEnabled;
+
+    [ObservableProperty]
+    private int _budgetWarningThreshold;
 
     public ObservableCollection<string> Themes { get; } = new()
     {
@@ -20,6 +36,31 @@ public partial class SettingsViewModel : ViewModelBase
     public SettingsViewModel()
     {
         SelectedThemeIndex = GetCurrentThemeIndex();
+        LoadApiKey();
+        LoadBudgetSettings();
+    }
+
+    private void LoadBudgetSettings()
+    {
+        var budget = BudgetService.Instance.CurrentBudget;
+        MonthlyBudgetLimit = budget.MonthlyLimit;
+        BudgetEnabled = budget.IsEnabled;
+        BudgetWarningThreshold = budget.WarningThreshold;
+    }
+
+    private void LoadApiKey()
+    {
+        var path = GetApiKeyPath();
+        if (File.Exists(path))
+        {
+            OpenAiApiKey = File.ReadAllText(path);
+        }
+    }
+
+    private string GetApiKeyPath()
+    {
+        var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        return Path.Combine(appData, "LocalLedger", "api_key.txt");
     }
 
     private int GetCurrentThemeIndex()
@@ -46,5 +87,23 @@ public partial class SettingsViewModel : ViewModelBase
     private void ToggleTheme()
     {
         App.ToggleTheme();
+    }
+
+    [RelayCommand]
+    private void SaveApiKey()
+    {
+        var path = GetApiKeyPath();
+        var dir = Path.GetDirectoryName(path);
+        if (!string.IsNullOrEmpty(dir))
+        {
+            Directory.CreateDirectory(dir);
+        }
+        File.WriteAllText(path, OpenAiApiKey);
+    }
+
+    [RelayCommand]
+    private void SaveBudgetSettings()
+    {
+        BudgetService.Instance.UpdateBudget(MonthlyBudgetLimit, BudgetEnabled, BudgetWarningThreshold);
     }
 }

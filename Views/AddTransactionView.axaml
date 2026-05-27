@@ -26,7 +26,7 @@
 
             <StackPanel HorizontalAlignment="Center" Spacing="4">
                 <TextBox Text="{Binding AmountText}"
-                         Watermark="0.00"
+                         PlaceholderText="0.00"
                          FontSize="36"
                          FontWeight="Bold"
                          HorizontalAlignment="Center"
@@ -51,9 +51,16 @@
             </StackPanel>
 
             <StackPanel Spacing="6">
-                <TextBlock Text="备注" FontSize="13" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4">
+                    <Button Content="智能分类"
+                            Command="{Binding AnalyzeNoteCommand}"
+                            FontSize="12" Padding="8,4" />
+                    <Button Content="智能备注"
+                            Command="{Binding GenerateNoteCommand}"
+                            FontSize="12" Padding="8,4" />
+                </StackPanel>
                 <TextBox Text="{Binding Note}"
-                         Watermark="添加备注..."
+                         PlaceholderText="添加备注..."
                          HorizontalAlignment="Stretch" />
             </StackPanel>
 

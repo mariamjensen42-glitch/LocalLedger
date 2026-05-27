@@ -2,14 +2,19 @@ using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LocalLedger.Models;
+using LocalLedger.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LocalLedger.ViewModels;
 
 public partial class AddTransactionViewModel : ViewModelBase
 {
+    private readonly AIService _aiService;
+
     [ObservableProperty]
     private decimal _amount;
 
@@ -31,6 +36,9 @@ public partial class AddTransactionViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isEditing;
 
+    [ObservableProperty]
+    private bool _isAnalyzing;
+
     public ObservableCollection<string> ExpenseCategories { get; } = new()
     {
         "餐饮", "交通", "购物", "娱乐", "居住", "医疗", "其他"
@@ -46,6 +54,15 @@ public partial class AddTransactionViewModel : ViewModelBase
     public string Title => IsEditing ? (IsExpense ? "编辑支出" : "编辑收入") : (IsExpense ? "记支出" : "记收入");
 
     public Action<Transaction?>? OnClose { get; set; }
+
+    public AddTransactionViewModel(AIService aiService)
+    {
+        _aiService = aiService;
+    }
+
+    public AddTransactionViewModel() : this(App.Services.GetRequiredService<AIService>())
+    {
+    }
 
     public void LoadTransaction(Transaction? transaction)
     {
@@ -127,5 +144,53 @@ public partial class AddTransactionViewModel : ViewModelBase
     private void Cancel()
     {
         OnClose?.Invoke(null);
+    }
+
+    [RelayCommand]
+    private async Task AnalyzeNote()
+    {
+        if (string.IsNullOrWhiteSpace(Note)) return;
+
+        IsAnalyzing = true;
+        try
+        {
+            var suggestedCategory = await _aiService.AnalyzeTransactionNote(Note);
+            
+            var categories = CurrentCategories;
+            var index = categories.IndexOf(suggestedCategory);
+            if (index >= 0)
+            {
+                SelectedCategoryIndex = index;
+            }
+        }
+        catch
+        {
+        }
+        finally
+        {
+            IsAnalyzing = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task GenerateNote()
+    {
+        if (Amount <= 0) return;
+
+        IsAnalyzing = true;
+        try
+        {
+            var category = CurrentCategories.Count > SelectedCategoryIndex
+                ? CurrentCategories[SelectedCategoryIndex]
+                : "其他";
+            Note = await _aiService.GenerateNoteSuggestion(Amount, category);
+        }
+        catch
+        {
+        }
+        finally
+        {
+            IsAnalyzing = false;
+        }
     }
 }

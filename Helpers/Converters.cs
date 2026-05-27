@@ -9,9 +9,16 @@ public class BoolToColorConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is bool isSelected && parameter is string type)
+        if (value is bool boolValue && parameter is string type)
         {
-            if (isSelected)
+            if (type == "Budget")
+            {
+                return boolValue
+                    ? new SolidColorBrush(Color.Parse("#EF4444"))
+                    : new SolidColorBrush(Color.Parse("#3B82F6"));
+            }
+
+            if (boolValue)
             {
                 return type switch
                 {

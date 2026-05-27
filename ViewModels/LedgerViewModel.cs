@@ -38,9 +38,46 @@ public partial class LedgerViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isAddingExpense = true;
 
+    [ObservableProperty]
+    private bool _isBudgetOver;
+
+    [ObservableProperty]
+    private bool _isBudgetNear;
+
+    [ObservableProperty]
+    private decimal _budgetLimit;
+
+    [ObservableProperty]
+    private decimal _currentMonthExpense;
+
+    [ObservableProperty]
+    private double _budgetPercentage;
+
     public LedgerViewModel()
     {
         RefreshFilteredTransactions();
+        BudgetService.Instance.BudgetChanged += OnBudgetChanged;
+        DataService.Instance.DataChanged += OnDataChanged;
+        UpdateBudgetStatus();
+    }
+
+    private void OnBudgetChanged(object? sender, EventArgs e)
+    {
+        UpdateBudgetStatus();
+    }
+
+    private void OnDataChanged(object? sender, EventArgs e)
+    {
+        UpdateBudgetStatus();
+    }
+
+    private void UpdateBudgetStatus()
+    {
+        BudgetLimit = BudgetService.Instance.CurrentBudget.MonthlyLimit;
+        CurrentMonthExpense = BudgetService.Instance.GetCurrentMonthExpense();
+        BudgetPercentage = BudgetService.Instance.GetBudgetPercentage();
+        IsBudgetOver = BudgetService.Instance.IsOverBudget();
+        IsBudgetNear = BudgetService.Instance.IsNearBudget();
     }
 
     partial void OnCurrentFilterChanged(DateFilter value)
@@ -118,6 +155,7 @@ public partial class LedgerViewModel : ViewModelBase
     {
         DataService.Instance.DeleteTransaction(transaction.Id);
         RefreshFilteredTransactions();
+        UpdateBudgetStatus();
     }
 
     [RelayCommand]
@@ -141,5 +179,6 @@ public partial class LedgerViewModel : ViewModelBase
         ShowAddForm = false;
         EditingTransaction = null;
         RefreshFilteredTransactions();
+        UpdateBudgetStatus();
     }
 }
