@@ -35,6 +35,7 @@ public partial class MainWindow : FAAppWindow
                 "LedgerView" => typeof(LedgerView),
                 "StatisticsView" => typeof(StatisticsView),
                 "CategoryView" => typeof(CategoryView),
+                "BudgetView" => typeof(BudgetView),
                 _ => null
             };
 

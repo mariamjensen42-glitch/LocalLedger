@@ -1,0 +1,187 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:LocalLedger.ViewModels"
+             xmlns:ui="using:FluentAvalonia.UI.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="LocalLedger.Views.BudgetView"
+             x:DataType="vm:BudgetViewModel">
+
+    <ScrollViewer Margin="16">
+        <StackPanel Spacing="16">
+
+            <!-- 预算总览 -->
+            <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                    CornerRadius="12" Padding="16">
+                <StackPanel>
+                    <TextBlock Text="预算总览" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+
+                    <Grid ColumnDefinitions="*,*,*" Margin="0,0,0,12">
+                        <Border Grid.Column="0" Background="#3B82F6" CornerRadius="12" Padding="12" Margin="0,0,6,0">
+                            <StackPanel>
+                                <TextBlock Text="月度预算" Foreground="White" FontSize="13" />
+                                <TextBlock Text="{Binding MonthlyLimit, StringFormat='¥{0:0.00}'}"
+                                           Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,4,0,0" />
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="1" Background="#EF4444" CornerRadius="12" Padding="12" Margin="6,0,6,0">
+                            <StackPanel>
+                                <TextBlock Text="已支出" Foreground="White" FontSize="13" />
+                                <TextBlock Text="{Binding CurrentMonthExpense, StringFormat='¥{0:0.00}'}"
+                                           Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,4,0,0" />
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="2" Background="#10B981" CornerRadius="12" Padding="12" Margin="6,0,0,0">
+                            <StackPanel>
+                                <TextBlock Text="剩余" Foreground="White" FontSize="13" />
+                                <TextBlock Text="{Binding RemainingBudget, StringFormat='¥{0:0.00}'}"
+                                           Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,4,0,0" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- 预算进度条 -->
+                    <ProgressBar Value="{Binding BudgetPercentage}" Maximum="100" Height="8"
+                                 Foreground="{Binding IsOverBudget, Converter={StaticResource BoolToColorConverter}, ConverterParameter=Budget}" />
+                    <Grid Margin="0,4,0,0">
+                        <TextBlock Text="{Binding BudgetPercentage, StringFormat='{}{0:F1}%'}"
+                                   FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                   HorizontalAlignment="Left" />
+                        <TextBlock HorizontalAlignment="Right" FontSize="12"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}建议每日消费: ¥{0:F0} (剩余{1}天)">
+                                    <Binding Path="SuggestedDailyBudget" />
+                                    <Binding Path="DaysLeftInMonth" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- 超支/预警提醒 -->
+            <Border Background="#FEF2F2" CornerRadius="8" Padding="12"
+                    IsVisible="{Binding IsOverBudget}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <ui:FASymbolIcon Symbol="Alert" FontSize="16" Foreground="#DC2626" />
+                    <TextBlock Text="本月支出已超出预算！" FontSize="14" Foreground="#DC2626" VerticalAlignment="Center" />
+                </StackPanel>
+            </Border>
+
+            <Border Background="#FFFBEB" CornerRadius="8" Padding="12"
+                    IsVisible="{Binding IsNearBudget}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <ui:FASymbolIcon Symbol="Alert" FontSize="16" Foreground="#D97706" />
+                    <TextBlock Text="本月支出即将达到预算上限" FontSize="14" Foreground="#D97706" VerticalAlignment="Center" />
+                </StackPanel>
+            </Border>
+
+            <!-- 分类预算 -->
+            <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                    CornerRadius="12" Padding="16">
+                <StackPanel>
+                    <TextBlock Text="分类预算" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+
+                    <ItemsControl ItemsSource="{Binding CategoryBudgets}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:CategoryBudgetDisplay">
+                                <Border Background="{DynamicResource ControlFillColorDefaultBrush}"
+                                        CornerRadius="8" Padding="12" Margin="0,0,0,8">
+                                    <Grid RowDefinitions="Auto,Auto,Auto">
+                                        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto">
+                                            <Border Grid.Column="0" Width="32" Height="32" CornerRadius="16"
+                                                    Background="{Binding Color}"
+                                                    VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <TextBlock Text="{Binding Icon}"
+                                                           Foreground="White" FontSize="13" FontWeight="Bold"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+                                            <TextBlock Grid.Column="1" Text="{Binding CategoryName}"
+                                                       FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="2"
+                                                       Text="{Binding Spent, StringFormat='¥{0:0.00}'}"
+                                                       FontSize="14" VerticalAlignment="Center" Margin="0,0,4,0" />
+                                            <Button Grid.Column="3"
+                                                    Command="{Binding $parent[UserControl].DataContext.RemoveCategoryBudgetCommand}"
+                                                    CommandParameter="{Binding CategoryName}"
+                                                    Background="Transparent" Padding="4,2">
+                                                <ui:FASymbolIcon Symbol="Delete" FontSize="14" Foreground="#EF4444" />
+                                            </Button>
+                                        </Grid>
+                                        <ProgressBar Grid.Row="1" Value="{Binding Percentage}" Maximum="100"
+                                                     Height="6" Margin="0,6,0,4"
+                                                     Foreground="{Binding IsOverBudget, Converter={StaticResource BoolToColorConverter}, ConverterParameter=Budget}" />
+                                        <Grid Grid.Row="2">
+                                            <TextBlock Text="{Binding Percentage, StringFormat='{}{0:F1}%'}"
+                                                       FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                       HorizontalAlignment="Left" />
+                                            <TextBlock Text="{Binding Remaining, StringFormat='剩余 ¥{0:0.00}'}"
+                                                       FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                       HorizontalAlignment="Right" />
+                                        </Grid>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Text="暂无分类预算" HorizontalAlignment="Center"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                               IsVisible="{Binding !CategoryBudgets.Count}" Margin="0,8,0,0" />
+
+                    <!-- 添加分类预算 -->
+                    <Border Background="{DynamicResource ControlFillColorDefaultBrush}"
+                            CornerRadius="8" Padding="12" Margin="0,8,0,0">
+                        <StackPanel>
+                            <TextBlock Text="添加分类预算" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,8" />
+                            <Grid ColumnDefinitions="*,Auto,Auto">
+                                <ComboBox Grid.Column="0"
+                                          ItemsSource="{Binding AvailableCategories}"
+                                          SelectedItem="{Binding SelectedCategoryName}"
+                                          PlaceholderText="选择分类"
+                                          HorizontalAlignment="Stretch" />
+                                <NumericUpDown Grid.Column="1"
+                                               Value="{Binding NewCategoryLimit}"
+                                               Minimum="0" Maximum="999999"
+                                               Width="120" Margin="8,0,8,0"
+                                               FormatString="F0" />
+                                <Button Grid.Column="2"
+                                        Command="{Binding AddCategoryBudgetCommand}"
+                                        Content="添加" Padding="16,6" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- 预算设置 -->
+            <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                    CornerRadius="12" Padding="16">
+                <StackPanel>
+                    <TextBlock Text="预算设置" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+                    <StackPanel Spacing="12">
+                        <CheckBox Content="启用月度预算" IsChecked="{Binding BudgetEnabled}" />
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="月度限额:" VerticalAlignment="Center" />
+                            <TextBox Text="{Binding MonthlyLimit}" Width="120" PlaceholderText="0.00" />
+                            <TextBlock Text="元" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="预警阈值:" VerticalAlignment="Center" />
+                            <NumericUpDown Value="{Binding WarningThreshold}"
+                                           Minimum="50" Maximum="100" Width="100" />
+                            <TextBlock Text="%" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <Button Content="保存设置"
+                                Command="{Binding SaveGeneralBudgetCommand}"
+                                HorizontalAlignment="Right" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+
+</UserControl>

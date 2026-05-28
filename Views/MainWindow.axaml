@@ -28,6 +28,7 @@
                 <ui:FANavigationViewItem x:Name="StatisticsNavItem" Content="统计" IconSource="Calculator"
                                        Tag="StatisticsView" />
                 <ui:FANavigationViewItem x:Name="CategoryNavItem" Content="分类" IconSource="Folder" Tag="CategoryView" />
+                <ui:FANavigationViewItem x:Name="BudgetNavItem" Content="预算" IconSource="Target" Tag="BudgetView" />
             </ui:FANavigationView.MenuItems>
 
             <ui:FANavigationView.Content>
